@@ -1,6 +1,6 @@
 import { serve } from "@hono/node-server";
 import app from "./app.js";
-import { GetUsersController } from "./controllers/GetUsers/GetUsers.js";
+import { GetUsersController } from "./controllers/GetUsers/getUsers.js";
 import { MongoGetUsersRepository } from "./repositories/getUsers/mongoGetUsers.js";
 
 app.get("/users", async (c) => {
