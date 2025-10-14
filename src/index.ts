@@ -6,7 +6,6 @@ import { GetUsersController } from "./controllers/GetUsers/getUsers.js";
 import { MongoClient } from "./database/mongo.js";
 import { MongoGetUsersRepository } from "./repositories/getUsers/mongoGetUsers.js";
 import { MongoCreateUserRepository } from "./repositories/createUsers/mongoCreateUsers.js";
-import { validator } from "hono/validator";
 import { userPassValidator } from "./helpers/validator.js";
 
 const main = async () => {
