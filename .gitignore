@@ -1,8 +1,8 @@
-# Mabys modifications
 ./index.js
 tsconfig_copy.json
 index_copy.ts
 .DS_Store
+.vscode
 
 # Logs
 logs

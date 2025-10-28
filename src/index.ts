@@ -1,8 +1,8 @@
 import { serve } from "@hono/node-server";
 import app from "./app.js";
 import { config } from "dotenv";
-import { CreateUserController } from "./controllers/CreateUsers/createUser.js";
-import { GetUsersController } from "./controllers/GetUsers/getUsers.js";
+import { CreateUserController } from "./controllers/createUsers/createUsers.js";
+import { GetUsersController } from "./controllers/getUsers/getUsers.js";
 import { MongoClient } from "./database/mongo.js";
 import { MongoGetUsersRepository } from "./repositories/getUsers/mongoGetUsers.js";
 import { MongoCreateUserRepository } from "./repositories/createUsers/mongoCreateUsers.js";
@@ -26,12 +26,12 @@ const main = async () => {
         async (c) => {
             const mongoCreateUserRespository = new MongoCreateUserRepository();
             const createUserController = new CreateUserController(mongoCreateUserRespository);
-            const reqBody = await c.req.json(); //c.req.valid('json');
-            const {body, statusCode} = await createUserController.handle({
+            const reqBody = await c.req.json();
+            const response = await createUserController.handle({
                 body: reqBody,
             });
 
-            return c.json({body, statusCode});
+            return c.json(response);
         }
     );
     

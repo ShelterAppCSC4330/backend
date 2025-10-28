@@ -1,4 +1,4 @@
-import { CreateUserParams, ICreateUserRepository } from "../../controllers/CreateUsers/protocols.js";
+import { CreateUserParams, ICreateUserRepository } from "../../controllers/createUsers/protocols.js";
 import { MongoClient } from "../../database/mongo.js";
 import { User } from "../../models/user.model.js";
 
