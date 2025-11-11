@@ -7,6 +7,8 @@ import { MongoClient } from "./database/mongo.js";
 import { MongoGetUsersRepository } from "./repositories/getUsers/mongoGetUsers.js";
 import { MongoCreateUserRepository } from "./repositories/createUsers/mongoCreateUsers.js";
 import { userPassValidator } from "./helpers/validator.js";
+import { MongoAuthenticateUserRepository } from "./repositories/authentication/mongoAuthenticate.js";
+import { AuthenticateUserController } from "./controllers/authentication/authenticate.js";
 
 const main = async () => {
     config();
@@ -31,6 +33,20 @@ const main = async () => {
                 body: reqBody,
             });
 
+            return c.json(response);
+        }
+    );
+
+    app.post('/authenticate',
+        userPassValidator,
+        async (c) => {
+            const mongoAuthenticateUserRespository = new MongoAuthenticateUserRepository();
+            const authenticateUserController = new AuthenticateUserController(mongoAuthenticateUserRespository);
+            const reqBody = await c.req.json();
+            const response = await authenticateUserController.handle({
+                body: reqBody,
+            });
+            
             return c.json(response);
         }
     );
