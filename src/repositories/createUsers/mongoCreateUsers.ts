@@ -4,6 +4,18 @@ import { User } from "../../models/user.model.js";
 
 export class MongoCreateUserRepository implements ICreateUserRepository {
     async createUser(params: CreateUserParams): Promise<User> {
+        const username = params.username.toLocaleLowerCase();
+        if (username) {
+          const existingUser = await MongoClient.db
+            .collection<Omit<User, "id">>("users")
+            .findOne({
+              username: { $regex: `^${username}$`, $options: "i" },
+            });
+
+          if (existingUser) {
+            throw new Error("Username already exists");
+          }
+        }
         // here the user is created
         const { insertedId } = await MongoClient.db
             .collection('users')

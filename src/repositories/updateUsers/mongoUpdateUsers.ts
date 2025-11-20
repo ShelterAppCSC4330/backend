@@ -8,6 +8,19 @@ import { User } from "../../models/user.model.js";
 
 export class MongoUpdateUserRepository implements IUpdateUserRepository {
   async updateUser(id: string, params: UpdateUserParams): Promise<User> {
+
+    if (params.username) {
+      const existingUser = await MongoClient.db
+        .collection<Omit<User, "id">>("users")
+        .findOne({
+          username: { $regex: `^${params.username.toLocaleLowerCase()}$`, $options: "i" },
+        });
+
+      if (existingUser) {
+        throw new Error("Username already exists");
+      }
+    }
+
     await MongoClient.db.collection("users").updateOne(
       { _id: new ObjectId(id) },
       {

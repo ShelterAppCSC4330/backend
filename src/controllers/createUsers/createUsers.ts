@@ -23,7 +23,13 @@ export class CreateUserController implements ICreateUserController {
                 statusCode: 201,
                 body: user,
             }
-        } catch (error) {
+        } catch (error: any) {
+            if (error.message === "Username already exists") {
+                return {
+                    statusCode: 409,
+                    body: error.message,
+                };
+            }
             return {
                 statusCode: 500,
                 body: 'Something went wrong.',
