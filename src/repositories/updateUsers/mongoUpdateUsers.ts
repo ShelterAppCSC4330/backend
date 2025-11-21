@@ -14,6 +14,7 @@ export class MongoUpdateUserRepository implements IUpdateUserRepository {
         .collection<Omit<User, "id">>("users")
         .findOne({
           username: { $regex: `^${params.username.toLocaleLowerCase()}$`, $options: "i" },
+          _id: { $ne: new ObjectId(id) }
         });
 
       if (existingUser) {
