@@ -5,15 +5,30 @@ import { IDeleteUserController, IDeleteUserRepository } from "./protocols.js";
 export class DeleteUserController implements IDeleteUserController {
   constructor(private readonly deleteUserRepository: IDeleteUserRepository) {}
 
-  async handle(httpRequest: HttpRequest<any>): Promise<HttpResponse<User>> {
+  async handle(httpRequest: HttpRequest<any> & { user?: any }): Promise<HttpResponse<User>> {
     try {
       const id = httpRequest?.params?.id;
+      const requestingUser = httpRequest.user;
 
       if (!id) {
         return {
           statusCode: 400,
-          body: "Missing id.",
+          body: "Missing user id.",
         };
+      }
+
+      if (!requestingUser) {
+        return {
+          statusCode: 401,
+          body: "Authentication required"
+        };
+      }
+
+      if (requestingUser.userId !== id) {
+        return {
+          statusCode: 403,
+          body: "Not authorized to update this user"
+        }
       }
 
       const user = await this.deleteUserRepository.deleteUser(id);

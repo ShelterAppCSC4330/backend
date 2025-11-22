@@ -15,6 +15,7 @@ export class AuthenticateUserController implements IAuthenticateUserController {
             }
             const user = await this.authenticateUserRepository.findUser(httpRequest.body);
             const payload = {
+                userId: user.id,
                 user: user.username,
                 exp: Math.floor(Date.now() / 1000) + 60 * (Number(process.env.TOKEN_MINUTES))
             }

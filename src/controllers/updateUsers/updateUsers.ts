@@ -9,15 +9,33 @@ import {
 export class UpdateUserController implements IUpdateUserController {
   constructor(private readonly updateUserRepository: IUpdateUserRepository) {}
 
-  async handle(httpRequest: HttpRequest<any>): Promise<HttpResponse<User>> {
+  async handle(
+    httpRequest: HttpRequest<any> & { user?: any }
+  ): Promise<HttpResponse<User>> {
     try {
       const id = httpRequest?.params?.id;
       const body = httpRequest?.body;
+      const requestingUser = httpRequest.user;
+
       if (!id) {
         return {
           statusCode: 500,
           body: "Missing user id",
         };
+      }
+
+      if (!requestingUser) {
+        return {
+          statusCode: 401,
+          body: "Authentication required"
+        };
+      }
+
+      if (requestingUser.userId !== id) {
+        return {
+          statusCode: 403,
+          body: "Not authorized to update this user"
+        }
       }
 
       // In case we add more fields we need to state which are editable.
@@ -46,7 +64,7 @@ export class UpdateUserController implements IUpdateUserController {
     } catch (error: any) {
       if (error.message === "Username already exists") {
         return {
-          statusCode:409,
+          statusCode: 409,
           body: error.message,
         };
       }
