@@ -9,6 +9,11 @@ import { MongoCreateUserRepository } from "./repositories/createUsers/mongoCreat
 import { userPassValidator } from "./helpers/validator.js";
 import { MongoAuthenticateUserRepository } from "./repositories/authentication/mongoAuthenticate.js";
 import { AuthenticateUserController } from "./controllers/authentication/authenticate.js";
+import { MongoUpdateUserRepository } from "./repositories/updateUsers/mongoUpdateUsers.js";
+import { UpdateUserController } from "./controllers/updateUsers/updateUsers.js";
+import { MongoDeleteUserRepository } from "./repositories/deleteUsers/mongoDeleteUsers.js";
+import { DeleteUserController } from "./controllers/deleteUsers/deleteUsers.js";
+import { jwtMiddleware } from "./middleware/jwt.js";
 
 const main = async () => {
     config();
@@ -50,6 +55,38 @@ const main = async () => {
             return c.json(response);
         }
     );
+
+    app.use('/users/*', jwtMiddleware);
+
+    app.patch('/users/:id',
+        userPassValidator,
+        async (c) => {
+        const mongoUpdateUserRepository = new MongoUpdateUserRepository();
+        const updateUserController = new UpdateUserController(mongoUpdateUserRepository);
+        const id = c.req.param('id');
+        const reqBody = await c.req.json();
+        const user = c.get('user' as any);
+        const response = await updateUserController.handle({
+            body: reqBody,
+            params: { id },
+            user
+        });
+
+        return c.json(response.body);
+    });
+    
+    app.delete('/users/:id', async (c) => {
+        const mongoDeleteUserRepository = new MongoDeleteUserRepository();
+        const deleteUserController = new DeleteUserController(mongoDeleteUserRepository);
+        const id = c.req.param('id');
+        const user = c.get('user' as any);
+        const response = await deleteUserController.handle({
+            params: { id },
+            user
+        });
+        
+        return c.json(response.body);
+    });
     
     const port = parseInt(process.env.PORT || '3000');
     serve({

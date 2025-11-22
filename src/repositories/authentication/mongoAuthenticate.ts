@@ -6,13 +6,17 @@ import * as argon2 from "argon2";
 export class MongoAuthenticateUserRepository implements IAuthenticateUserRepository {
     async findUser(params: AuthenticateUserParams): Promise<User> {
         const user = await MongoClient.db
-            .collection<User>('users')
+            .collection<Omit<User,"id">>('users')
             .findOne({ username: params.username })
         if (!user) {
             throw new Error('User does not exist')
         }
-        if (!await argon2.verify(user.password, params.password))
+        if (!await argon2.verify(user.password, params.password)) {
             throw new Error('Incorrect password')
-        return user;
+        }
+
+        const {_id, ...rest} = user;
+
+        return { id: _id.toHexString(), ...rest };
     }
 }
