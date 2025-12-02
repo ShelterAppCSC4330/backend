@@ -18,6 +18,8 @@
     "dev": "tsx watch ./src/index.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.0",
+    "@google/generative-ai": "^0.24.1",
     "@hono/node-server": "^1.19.5",
     "argon2": "^0.44.0",
     "dotenv": "^17.2.3",
